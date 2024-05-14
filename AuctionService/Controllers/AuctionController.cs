@@ -1,32 +1,40 @@
-﻿// using AuctionService.Repositories;
-// using Microsoft.AspNetCore.Mvc;
-// using AuctionService.Models;
+﻿using AuctionService.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
-// namespace AuctionService.Controllers
-// {
-//     [ApiController]
-//     [Route("auctions")]
-//     public class BiddingController : ControllerBase
-//     {
-//         private readonly ILogger<BiddingController> _logger;
-//         private readonly IConfiguration _config;
-//         private readonly IAuctionRepository _service;
+namespace AuctionService.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AuctionController : ControllerBase
+    {
+        private readonly ICatalogRepository _catalogService;
+        private readonly ILogger<AuctionController> _logger;
 
-//         public BiddingController(ILogger<BiddingController> logger, IConfiguration config, IAuctionRepository service)
-//         {
-//             _logger = logger;
-//             _config = config;
-//             _service = service;
-//         }
+        public AuctionController(ICatalogRepository catalogService, ILogger<AuctionController> logger)
+        {
+            _catalogService = catalogService;
+            _logger = logger;
+        }
 
-//         [HttpPost]
-//         public async Task<IActionResult> CreateAuction([FromBody] Auction auction)
-//         {
-//             // Submit the Auction
-//             await _service.CreateAuction(auction);
-
-//             // Return success response
-//             return Ok("Auction submitted");
-//         }
-//     }
-// }
+        [HttpGet("{catalogId}")]
+        public async Task<IActionResult> GetCatalog(int catalogId)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting catalog with ID {catalogId}");
+                var catalog = await _catalogService.GetCatalogAsync(catalogId);
+                if (catalog == null)
+                {
+                    return NotFound($"Catalog with ID {catalogId} not found.");
+                }
+                return Ok(catalog);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (not implemented here)
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+    }
+}
