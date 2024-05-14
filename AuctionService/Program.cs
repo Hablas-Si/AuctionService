@@ -4,7 +4,6 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 using AuctionService.Models;
 using System.Text.Json;
-using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +23,9 @@ builder.Services.AddHttpClient<ICatalogRepository, CatalogRepository>(client =>
 {
     client.BaseAddress = new Uri(catalogServiceBaseUrl); // URL til CatalogService
 
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator // Brug kun i udviklingsmiljøer
 });
 // tilf�jer Repository til services
 
