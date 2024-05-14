@@ -1,6 +1,6 @@
 ﻿namespace AuctionService.Models
 {
-    public class Auction
+    public class AuctionDetails
     {
         public Guid AuctionID { get; set; }
         public DateTime Start { get; set; }
