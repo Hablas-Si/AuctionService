@@ -1,6 +1,9 @@
-﻿using AuctionService.Repositories;
-using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using AuctionService.Repositories;
 
 namespace AuctionService.Controllers
 {
@@ -20,21 +23,15 @@ namespace AuctionService.Controllers
         [HttpGet("{catalogId}")]
         public async Task<IActionResult> GetCatalog(int catalogId)
         {
-            try
-            {
-                _logger.LogInformation($"Getting catalog with ID {catalogId}");
-                var catalog = await _catalogService.GetCatalogAsync(catalogId);
-                if (catalog == null)
-                {
-                    return NotFound($"Catalog with ID {catalogId} not found.");
-                }
-                return Ok(catalog);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (not implemented here)
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            _logger.LogInformation("Getting catalog with id {catalogId}", catalogId);
+            var response = await _catalogService.GetCatalogAsync(catalogId);
+
+            var content = await response.Content.ReadAsStringAsync();
+            return Content(content, response.Content.Headers.ContentType.ToString());
         }
+
+        // Tilføj andre metoder, hvis nødvendigt
     }
+
+
 }
