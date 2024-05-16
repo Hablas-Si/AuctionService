@@ -17,12 +17,12 @@ namespace AuctionService.Repositories
             _logger = logger;
         }
 
-        public async Task<HttpResponseMessage> GetSpecificCatalog(Guid ItemId)
-        {
-            var response = await _httpClient.GetAsync($"/api/catalog/{ItemId}");
-            response.EnsureSuccessStatusCode();
-            return response;
-        }
+        // public async Task<HttpResponseMessage> GetSpecificCatalog(Guid ItemId)
+        // {
+        //     var response = await _httpClient.GetAsync($"/api/catalog/{ItemId}");
+        //     response.EnsureSuccessStatusCode();
+        //     return response;
+        // }
 
         public async Task<HttpResponseMessage> GetTask(Guid itemId)
         {
