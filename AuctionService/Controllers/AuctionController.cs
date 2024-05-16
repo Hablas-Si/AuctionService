@@ -54,7 +54,7 @@ namespace AuctionService.Controllers
                 using (var client = new HttpClient())
                 {
                     // Assuming the other service is running on localhost:5213
-                    var response = await client.GetAsync($"http://localhost:5213/Catalog/{auctionRequest.Item}");
+                    var response = await client.GetAsync($"http://localhost:5020/api/Catalog/{auctionRequest.Item}");
                     if (!response.IsSuccessStatusCode)
                     {
                         return BadRequest("Failed to fetch item data");
