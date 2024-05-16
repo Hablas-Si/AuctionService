@@ -107,15 +107,15 @@ namespace AuctionService.Controllers
             return Ok("High bid updated successfully");
         }
 
-        [HttpGet("test/{catalogId}")]
-        public async Task<IActionResult> GetCatalog(Guid catalogId)
-        {
-            _logger.LogInformation("Getting catalog with id {catalogId}", catalogId);
-            var response = await _catalogService.GetSpecificCatalog(catalogId);
+        // [HttpGet("test/{catalogId}")]
+        // public async Task<IActionResult> GetCatalog(Guid catalogId)
+        // {
+        //     _logger.LogInformation("Getting catalog with id {catalogId}", catalogId);
+        //     var response = await _catalogService.GetSpecificCatalog(catalogId);
 
-            var content = await response.Content.ReadAsStringAsync();
-            return Content(content, response.Content.Headers.ContentType.ToString());
-        }
+        //     var content = await response.Content.ReadAsStringAsync();
+        //     return Content(content, response.Content.Headers.ContentType.ToString());
+        // }
 
 
     }
