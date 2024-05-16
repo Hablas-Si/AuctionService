@@ -3,9 +3,12 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 using AuctionService.Models;
+using Microsoft.AspNetCore.HttpsPolicy; // Add this line
 using System.Text.Json;
+using BiddingService.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // BsonSeralizer... fort�ller at hver gang den ser en Guid i alle entiteter skal den serializeres til en string. 
 BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
@@ -14,20 +17,13 @@ BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
 string mySecret = Environment.GetEnvironmentVariable("Secret") ?? "none";
 string myIssuer = Environment.GetEnvironmentVariable("Issuer") ?? "none";
 
-// builder.Services.AddSingleton<IAuctionRepository, AuctionRepositiory>();
-builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
 
-var catalogServiceBaseUrl = Environment.GetEnvironmentVariable("ConnectionURI");
-// Konfigurer HttpClient for AuctionHouse
-builder.Services.AddHttpClient<ICatalogRepository, CatalogRepository>(client =>
+builder.Services.Configure<MongoDBSettings>(options =>
 {
-    client.BaseAddress = new Uri(catalogServiceBaseUrl); // URL til CatalogService
-
-}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-{
-    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator // Brug kun i udviklingsmiljøer
+    options.ConnectionAuction = Environment.GetEnvironmentVariable("ConnectionAuction") ?? throw new ArgumentNullException("ConnectionURI environment variable not set");
 });
-// tilf�jer Repository til services
+// tilføjer Repository til services
+builder.Services.AddSingleton<IAuctionRepository, AuctionRepository>();
 
 
 builder.Services.AddControllers();
@@ -41,9 +37,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
-app.UseHttpsRedirection();
-
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
