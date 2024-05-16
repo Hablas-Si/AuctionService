@@ -20,11 +20,21 @@ string myIssuer = Environment.GetEnvironmentVariable("Issuer") ?? "none";
 
 builder.Services.Configure<MongoDBSettings>(options =>
 {
-    options.ConnectionAuction = Environment.GetEnvironmentVariable("ConnectionAuction") ?? throw new ArgumentNullException("ConnectionURI environment variable not set");
+    options.ConnectionAuction = "mongodb+srv://admin:admin@auctionhouse.dfo2bcd.mongodb.net/" ?? throw new ArgumentNullException("ConnectionAuction environment variable not set");
 });
 // tilføjer Repository til services
 builder.Services.AddSingleton<IAuctionRepository, AuctionRepository>();
 
+// var catalogServiceBaseUrl = Environment.GetEnvironmentVariable("ConnectionURI");
+// Konfigurer HttpClient for AuctionHouse
+builder.Services.AddHttpClient<ICatalogRepository, CatalogRepository>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5020"); // URL til CatalogService
+
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator // Brug kun i udviklingsmiljøer
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

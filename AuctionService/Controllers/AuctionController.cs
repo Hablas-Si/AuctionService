@@ -14,12 +14,15 @@ namespace AuctionService.Controllers
     [Route("[controller]")]
     public class AuctionController : ControllerBase
     {
+
         private readonly IAuctionRepository _auctionService;
+        private readonly ICatalogRepository _catalogService;
         private readonly ILogger<AuctionController> _logger;
 
-        public AuctionController(ILogger<AuctionController> logger, IAuctionRepository auctionservice)
+        public AuctionController(ILogger<AuctionController> logger, IAuctionRepository auctionservice, ICatalogRepository catalogService)
         {
             _auctionService = auctionservice;
+            _catalogService = catalogService;
             _logger = logger;
         }
 
@@ -36,64 +39,61 @@ namespace AuctionService.Controllers
 
             return Ok(auction); // Return auction if found
         }
+
+
         [HttpPost]
-        public async Task<IActionResult> SubmitAuction([FromBody] NewAuctionAction auctionRequest)
+        public async Task<IActionResult> CreateAuction([FromBody] NewAuctionAction auctionRequest)
         {
-            // Check if the request is null or invalid
             if (auctionRequest == null || !ModelState.IsValid)
             {
                 return BadRequest("Invalid auction data");
             }
+
             try
             {
-                // Fetch the item data from the other service
-                Console.WriteLine(auctionRequest.Item);
-                // Fetch the item data from the other service
-                Item dbItem; // Use Item for deserialization
+                _logger.LogInformation("Received auction request: {auctionRequest}", auctionRequest);
 
-                using (var client = new HttpClient())
+                // Hent katalogdata fra CatalogService
+                var catalogResponse = await _catalogService.GetTask(auctionRequest.Item);
+                if (!catalogResponse.IsSuccessStatusCode)
                 {
-                    // Assuming the other service is running on localhost:5213
-                    var response = await client.GetAsync($"http://localhost:5020/api/Catalog/{auctionRequest.Item}");
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return BadRequest("Failed to fetch item data");
-                    }
-
-                    // Read the response content as a string
-                    var content = await response.Content.ReadAsStringAsync();
-
-                    // Deserialize the content string to Item
-                    dbItem = JsonSerializer.Deserialize<Item>(content, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true // Ensure case-insensitive property matching
-                    });
-
-                    // Handle case where dbItem is null or has default values
-                    if (dbItem == null || string.IsNullOrWhiteSpace(dbItem.Title) || dbItem.Price <= 0)
-                    {
-                        return BadRequest("Invalid item data");
-                    }
+                    _logger.LogError("Failed to fetch item data from CatalogService. Status code: {statusCode}", catalogResponse.StatusCode);
+                    return BadRequest("Failed to fetch item data from CatalogService");
                 }
 
-                // Create a new auction using the provided data
-                var auction = new Auction(auctionRequest.Start, auctionRequest.End, dbItem);
+                var catalogContent = await catalogResponse.Content.ReadAsStringAsync();
+                var catalogItem = JsonSerializer.Deserialize<Item>(catalogContent, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
-                // Submit the auction
+                if (catalogItem == null || string.IsNullOrWhiteSpace(catalogItem.Title) || catalogItem.Price <= 0)
+                {
+                    _logger.LogError("Invalid item data received from CatalogService");
+                    return BadRequest("Invalid item data received from CatalogService");
+                }
+
+                // Opret en auktion med katalogdata
+                var auction = new Auction(auctionRequest.Start, auctionRequest.End, catalogItem);
+
+                // Indsend auktion til AuctionService
                 await _auctionService.SubmitAuction(auction);
 
-                // Return success response
-                return Ok("Auction submitted");
+                _logger.LogInformation("Auction submitted successfully");
+
+                return Ok("Auction submitted successfully");
             }
             catch (Exception ex)
             {
-                // Log any errors that occur during the process
-                _logger.LogError(ex, "An error occurred while submitting auction.");
+                _logger.LogError(ex, "An error occurred while creating auction.");
                 return StatusCode(500, "Internal server error");
             }
         }
-            [HttpPut("{auctionID}/bid")]
-            public async Task<IActionResult> UpdateHighBid(Guid auctionID, [FromBody] HighBid newHighBid)
+
+
+
+        [HttpPut("{auctionID}/bid")]
+        public async Task<IActionResult> UpdateHighBid(Guid auctionID, [FromBody] HighBid newHighBid)
         {
             var auction = await _auctionService.GetAuction(auctionID);
             if (auction == null)
@@ -106,6 +106,18 @@ namespace AuctionService.Controllers
 
             return Ok("High bid updated successfully");
         }
+
+        [HttpGet("test/{catalogId}")]
+        public async Task<IActionResult> GetCatalog(Guid catalogId)
+        {
+            _logger.LogInformation("Getting catalog with id {catalogId}", catalogId);
+            var response = await _catalogService.GetSpecificCatalog(catalogId);
+
+            var content = await response.Content.ReadAsStringAsync();
+            return Content(content, response.Content.Headers.ContentType.ToString());
+        }
+
+
     }
 
 
