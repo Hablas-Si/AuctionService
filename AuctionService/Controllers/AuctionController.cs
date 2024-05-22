@@ -7,26 +7,30 @@ using Microsoft.AspNetCore.Mvc;
 using AuctionService.Repositories;
 using AuctionService.Models;
 using MongoDB.Bson;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AuctionService.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuctionController : ControllerBase
     {
 
         private readonly IAuctionRepository _auctionService;
         private readonly ICatalogRepository _catalogService;
         private readonly ILogger<AuctionController> _logger;
+        private readonly IVaultRepository _vaultService;
 
-        public AuctionController(ILogger<AuctionController> logger, IAuctionRepository auctionservice, ICatalogRepository catalogService)
+
+        public AuctionController(ILogger<AuctionController> logger, IAuctionRepository auctionservice, ICatalogRepository catalogService, IVaultRepository vaultService)
         {
             _auctionService = auctionservice;
             _catalogService = catalogService;
             _logger = logger;
+            _vaultService = vaultService;
         }
 
-        [HttpGet("{auctionID}")]
+        [HttpGet("{auctionID}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAuction(Guid auctionID)
         {
             _logger.LogInformation("Getting auction with id {auctionID}", auctionID);
@@ -41,7 +45,7 @@ namespace AuctionService.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateAuction([FromBody] NewAuctionAction auctionRequest)
         {
             if (auctionRequest == null || !ModelState.IsValid)
@@ -91,8 +95,8 @@ namespace AuctionService.Controllers
         }
 
 
-
-        [HttpPut("{auctionID}/bid")]
+        
+        [HttpPut("{auctionID}/bid"), Authorize(Roles = "User, Admin")]
         public async Task<IActionResult> UpdateHighBid(Guid auctionID, [FromBody] HighBid newHighBid)
         {
             var auction = await _auctionService.GetAuction(auctionID);
@@ -116,6 +120,40 @@ namespace AuctionService.Controllers
         //     var content = await response.Content.ReadAsStringAsync();
         //     return Content(content, response.Content.Headers.ContentType.ToString());
         // }
+
+        // OBS: TIlføj en Authorize attribute til metoderne nedenunder Kig ovenfor i jwt token creation.
+        [HttpGet("authorized"), Authorize(Roles = "Admin")]
+        public IActionResult Authorized()
+        {
+
+            // Hvis brugeren har en gyldig JWT-token og rollen "Admin", vil denne metode blive udført
+            return Ok("You are authorized to access this resource.");
+        }
+
+        // En get der henter secrets ned fra vault
+        [AllowAnonymous]
+        [HttpGet("getsecret/{path}")]
+        public async Task<IActionResult> GetSecret(string path)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting secret with path {path}");
+                var secretValue = await _vaultService.GetSecretAsync(path);
+                if (secretValue != null)
+                {
+                    return Ok(secretValue);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving secret: {ex}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving secret.");
+            }
+        }
 
 
 
