@@ -7,7 +7,7 @@ using AuctionService.Repositories;
 using System.Net.Http;
 using System.Security.Cryptography;
 
-namespace BiddingService.Repositories
+namespace AuctionService.Repositories
 {
     public class AuctionRepository : IAuctionRepository
     {
@@ -16,7 +16,7 @@ namespace BiddingService.Repositories
         public AuctionRepository(IOptions<MongoDBSettings> mongoDBSettings)
         {
             // trækker connection string og database navn og collectionname fra program.cs aka fra terminalen ved export. Dette er en constructor injection.
-            MongoClient client = new MongoClient(mongoDBSettings.Value.ConnectionAuction);
+            MongoClient client = new MongoClient(mongoDBSettings.Value.ConnectionAuctionDB);
             IMongoDatabase database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
             AuctionCollection = database.GetCollection<Auction>(mongoDBSettings.Value.CollectionName);
         }
