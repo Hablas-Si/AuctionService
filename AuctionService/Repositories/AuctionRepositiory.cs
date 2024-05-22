@@ -1,39 +1,46 @@
-﻿using AuctionService.Models;
-using Microsoft.Extensions.Options;
+﻿using System.Threading.Tasks;
+using AuctionService.Models;
 using MongoDB.Driver;
+using MongoDB.Bson;
+using Microsoft.Extensions.Options;
+using AuctionService.Repositories;
+using System.Net.Http;
+using System.Security.Cryptography;
 
-namespace AuctionService.Repositories
+namespace BiddingService.Repositories
 {
-    public class AuctionRepositiory : IAuctionRepository 
+    public class AuctionRepository : IAuctionRepository
     {
         private readonly IMongoCollection<Auction> AuctionCollection;
-        public AuctionRepositiory(IOptions<MongoDBSettings> mongoDBSettings)
+
+        public AuctionRepository(IOptions<MongoDBSettings> mongoDBSettings)
         {
             // trækker connection string og database navn og collectionname fra program.cs aka fra terminalen ved export. Dette er en constructor injection.
-            MongoClient client = new MongoClient(mongoDBSettings.Value.ConnectionURI);
+            MongoClient client = new MongoClient(mongoDBSettings.Value.ConnectionAuction);
             IMongoDatabase database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
             AuctionCollection = database.GetCollection<Auction>(mongoDBSettings.Value.CollectionName);
         }
 
-        public async Task CreateAuction()
+        public async Task<Auction> GetAuction(Guid auctionID)
         {
-            //To be implemented
-            //This gets called from catalogservice as soon as an item is created
+            // Create a filter to match documents with the specified auction ID
+            var filter = Builders<Auction>.Filter.Eq(a => a.Id, auctionID);
+
+            // Execute the query and return the first matching document
+            return await AuctionCollection.Find(filter).FirstOrDefaultAsync();
         }
-        public async Task UpdateMaxBid()
+
+        public async Task SubmitAuction(Auction auction)
         {
-            //To be implemented
-            //This is called by BiddingService as soon as a new max bid is found
+            Console.WriteLine($"Bid submitted: {auction}");
+            await AuctionCollection.InsertOneAsync(auction);
         }
-        public async Task DeleteAuction()
+        public async Task UpdateHighBid(Guid auctionID, HighBid newHighBid)
         {
-            //To be implemented
-            //Only to be used in absolute emergencies. Auctions should be updated to reflect changes
-        }
-        public async Task GetAuctions()
-        {
-            //To be implemented
-            //Gets a list of all auctions
+            // Update only the HighBid property of the auction
+            var filter = Builders<Auction>.Filter.Eq(a => a.Id, auctionID);
+            var update = Builders<Auction>.Update.Set(a => a.HighBid, newHighBid);
+            await AuctionCollection.UpdateOneAsync(filter, update);
         }
     }
 }
