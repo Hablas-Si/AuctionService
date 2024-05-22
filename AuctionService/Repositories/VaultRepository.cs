@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using AuctionService.Models;
 using VaultSharp.V1.AuthMethods;
+using Nlog;
+
 
 namespace AuctionService.Repositories
 {
