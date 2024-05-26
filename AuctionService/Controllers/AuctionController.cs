@@ -33,14 +33,20 @@ namespace AuctionService.Controllers
         [HttpGet("{auctionID}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAuction(Guid auctionID)
         {
+            Console.WriteLine("GETAUCTION ENTERED");
+            Console.WriteLine(auctionID);
             _logger.LogInformation("Getting auction with id {auctionID}", auctionID);
             var auction = await _auctionService.GetAuction(auctionID);
 
+            Console.WriteLine("AUCTIONSERVICE RETURNED VALUE");
+
             if (auction == null)
             {
+                Console.WriteLine("AUCTION NOT FOUND");
                 return NotFound(); // Return 404 if auction is not found
             }
 
+            Console.WriteLine("AUCTION FOUND");
             return Ok(auction); // Return auction if found
         }
 
