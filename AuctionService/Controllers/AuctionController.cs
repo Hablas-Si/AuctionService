@@ -42,14 +42,20 @@ namespace AuctionService.Controllers
         [HttpGet("{auctionID}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAuction(Guid auctionID)
         {
+            Console.WriteLine("GETAUCTION ENTERED");
+            Console.WriteLine(auctionID);
             _logger.LogInformation("Getting auction with id {auctionID}", auctionID);
             var auction = await _auctionService.GetAuction(auctionID);
 
+            Console.WriteLine("AUCTIONSERVICE RETURNED VALUE");
+
             if (auction == null)
             {
+                Console.WriteLine("AUCTION NOT FOUND");
                 return NotFound(); // Return 404 if auction is not found
             }
 
+            Console.WriteLine("AUCTION FOUND");
             return Ok(auction); // Return auction if found
         }
 
@@ -139,30 +145,7 @@ namespace AuctionService.Controllers
             return Ok("You are authorized to access this resource.");
         }
 
-        // En get der henter secrets ned fra vault
-        [AllowAnonymous]
-        [HttpGet("getsecret/{path}")]
-        public async Task<IActionResult> GetSecret(string path)
-        {
-            try
-            {
-                _logger.LogInformation($"Getting secret with path {path}");
-                var secretValue = await _vaultService.GetSecretAsync(path);
-                if (secretValue != null)
-                {
-                    return Ok(secretValue);
-                }
-                else
-                {
-                    return NotFound();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error retrieving secret: {ex}");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving secret.");
-            }
-        }
+       
 
 
 

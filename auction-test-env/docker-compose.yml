@@ -40,7 +40,6 @@ services:
     ports:
       - "5025:8080"
     environment:
-      - ConnectionURI=mongodb+srv://admin:admin@auctionhouse.dfo2bcd.mongodb.net/
       - loki=http://loki:3100
     networks:
       - my_network

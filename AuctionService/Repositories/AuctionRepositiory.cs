@@ -29,8 +29,10 @@ namespace AuctionService.Repositories
             // Execute the query and return all matching documents
             return await AuctionCollection.Find(filter).ToListAsync();
         }
+
         public async Task<Auction> GetAuction(Guid auctionID)
         {
+            Console.WriteLine("GETAUCTION REPO ENTERED");
             // Create a filter to match documents with the specified auction ID
             var filter = Builders<Auction>.Filter.Eq(a => a.Id, auctionID);
 
