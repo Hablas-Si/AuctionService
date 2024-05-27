@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using AuctionService.Repositories;
 using System.Net.Http;
 using System.Security.Cryptography;
+using AuctionService.Services;
 
 namespace AuctionService.Repositories
 {
@@ -47,10 +48,14 @@ namespace AuctionService.Repositories
         }
         public async Task UpdateHighBid(Guid auctionID, HighBid newHighBid)
         {
-            // Update only the HighBid property of the auction
-            var filter = Builders<Auction>.Filter.Eq(a => a.Id, auctionID);
-            var update = Builders<Auction>.Update.Set(a => a.HighBid, newHighBid);
-            await AuctionCollection.UpdateOneAsync(filter, update);
+            var subscriber = new RabbitMQSubscriber("BidToAuc");
+            await subscriber.StartListening(async (message) =>
+            {
+                // Update only the HighBid property of the auction
+                var filter = Builders<Auction>.Filter.Eq(a => a.Id, auctionID);
+                var update = Builders<Auction>.Update.Set(a => a.HighBid, newHighBid);
+                await AuctionCollection.UpdateOneAsync(filter, update);
+            });
         }
     }
 }
