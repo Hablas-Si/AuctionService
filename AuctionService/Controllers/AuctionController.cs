@@ -30,7 +30,7 @@ namespace AuctionService.Controllers
             _vaultService = vaultService;
         }
 
-        [HttpGet("all"), Authorize(Roles="admin")]
+        [HttpGet("all"), Authorize(Roles="Admin")]
         public async Task<IActionResult> getAll()
         {
             _logger.LogInformation("Fetching all items from auctions");
@@ -47,7 +47,7 @@ namespace AuctionService.Controllers
 
 
         
-        [HttpGet("{auctionID}"), Authorize(Roles="admin")]
+        [HttpGet("{auctionID}"), Authorize(Roles="Admin")]
         public async Task<IActionResult> GetAuction(Guid auctionID)
         {
             Console.WriteLine("GETAUCTION ENTERED");
