@@ -30,6 +30,15 @@ namespace AuctionService.Controllers
             _vaultService = vaultService;
         }
 
+        [HttpGet("all"), Authorize(Roles = "Admin")]
+        public async Task<IActionResult> getAll()
+        {
+            _logger.LogInformation("Fetching all items from catalog");
+            var auctionList = await _auctionService.GetAllAuctions();
+            return Ok(auctionList);
+        }
+
+
         [HttpGet("{auctionID}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAuction(Guid auctionID)
         {
@@ -95,7 +104,7 @@ namespace AuctionService.Controllers
         }
 
 
-        
+
         [HttpPut("{auctionID}/bid"), Authorize(Roles = "User, Admin")]
         public async Task<IActionResult> UpdateHighBid(Guid auctionID, [FromBody] HighBid newHighBid)
         {
