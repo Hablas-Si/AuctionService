@@ -34,7 +34,7 @@ namespace AuctionService.Controllers
         public async Task<IActionResult> getAll()
         {
             _logger.LogInformation("Fetching all items from catalog");
-            var auctionList = await _auctionService.getAll();
+            var auctionList = await _auctionService.GetAllAuctions();
             return Ok(auctionList);
         }
 
