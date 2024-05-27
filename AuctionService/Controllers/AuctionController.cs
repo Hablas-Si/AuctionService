@@ -30,7 +30,7 @@ namespace AuctionService.Controllers
             _vaultService = vaultService;
         }
 
-        [HttpGet("auctions"), Authorize(Roles = "Admin")]
+        [HttpGet("all"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> getAll()
         {
             _logger.LogInformation("Fetching all items from catalog");
