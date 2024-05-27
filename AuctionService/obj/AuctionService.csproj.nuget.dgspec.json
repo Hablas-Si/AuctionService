@@ -1,26 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "/Users/chilinhm/Desktop/AuctionHouse/AuctionService/AuctionService/AuctionService.csproj": {}
+    "E:\\4. Sem Projekt\\AuctionService\\AuctionService\\AuctionService.csproj": {}
   },
   "projects": {
-    "/Users/chilinhm/Desktop/AuctionHouse/AuctionService/AuctionService/AuctionService.csproj": {
+    "E:\\4. Sem Projekt\\AuctionService\\AuctionService\\AuctionService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/chilinhm/Desktop/AuctionHouse/AuctionService/AuctionService/AuctionService.csproj",
+        "projectUniqueName": "E:\\4. Sem Projekt\\AuctionService\\AuctionService\\AuctionService.csproj",
         "projectName": "AuctionService",
-        "projectPath": "/Users/chilinhm/Desktop/AuctionHouse/AuctionService/AuctionService/AuctionService.csproj",
-        "packagesPath": "/Users/chilinhm/.nuget/packages/",
-        "outputPath": "/Users/chilinhm/Desktop/AuctionHouse/AuctionService/AuctionService/obj/",
+        "projectPath": "E:\\4. Sem Projekt\\AuctionService\\AuctionService\\AuctionService.csproj",
+        "packagesPath": "C:\\Users\\kaspe\\.nuget\\packages\\",
+        "outputPath": "E:\\4. Sem Projekt\\AuctionService\\AuctionService\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/chilinhm/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\kaspe\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "/usr/local/share/dotnet/library-packs": {},
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -33,50 +34,11 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
         }
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "dependencies": {
-            "Microsoft.AspNetCore.Authentication.JwtBearer": {
-              "target": "Package",
-              "version": "[8.0.5, )"
-            },
-            "NLog.Web.AspNetCore": {
-              "target": "Package",
-              "version": "[5.3.11, )"
-            },
-            "Nlog": {
-              "target": "Package",
-              "version": "[5.3.2, )"
-            },
-            "Nlog.Targets.Loki": {
-              "target": "Package",
-              "version": "[2.2.0, )"
-            },
-            "Nlog.Web": {
-              "target": "Package",
-              "version": "[5.3.11, )"
-            },
-            "Swashbuckle.AspNetCore": {
-              "target": "Package",
-              "version": "[6.4.0, )"
-            },
-            "VaultSharp": {
-              "target": "Package",
-              "version": "[1.13.0.1, )"
-            },
-            "mongodb.driver": {
-              "target": "Package",
-              "version": "[2.25.0, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",
@@ -88,15 +50,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "frameworkReferences": {
-            "Microsoft.AspNetCore.App": {
-              "privateAssets": "none"
-            },
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.204/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     }
