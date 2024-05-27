@@ -13,6 +13,7 @@
     <PackageReference Include="Nlog.Targets.Loki" Version="2.2.0" />
     <PackageReference Include="Nlog.Web" Version="5.3.11" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.11" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="VaultSharp" Version="1.13.0.1" />
     <None Include="NLog.config"> 

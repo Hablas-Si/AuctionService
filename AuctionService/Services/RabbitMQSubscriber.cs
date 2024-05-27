@@ -12,7 +12,7 @@ namespace AuctionService.Services
 public class RabbitMQSubscriber
 {
     private readonly RMQConnection _connection;
-        private readonly IModel _channel;
+    private readonly IModel _channel;
     private readonly string _queueName;
 
     public RabbitMQSubscriber(string queueName)
