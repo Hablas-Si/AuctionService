@@ -21,6 +21,14 @@ namespace AuctionService.Repositories
             AuctionCollection = database.GetCollection<Auction>(mongoDBSettings.Value.CollectionName);
         }
 
+        public async Task<IEnumerable<Auction>> GetAllAuctions()
+        {
+            // Create an empty filter to match all documents
+            var filter = new BsonDocument();
+
+            // Execute the query and return all matching documents
+            return await AuctionCollection.Find(filter).ToListAsync();
+        }
         public async Task<Auction> GetAuction(Guid auctionID)
         {
             // Create a filter to match documents with the specified auction ID
