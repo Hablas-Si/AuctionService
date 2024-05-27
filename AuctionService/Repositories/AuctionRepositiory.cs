@@ -21,6 +21,24 @@ namespace AuctionService.Repositories
             AuctionCollection = database.GetCollection<Auction>(mongoDBSettings.Value.CollectionName);
         }
 
+        public async Task<IEnumerable<Auction>> GetAllAuctions()
+        {
+            // Hent alle Catalog-objekter
+            var auctions = await AuctionCollection.Find(_ => true).ToListAsync();
+
+            // Opret en liste til at gemme Catalog-objekter med tilhørende ExtendedCatalog-objekter
+            var auctionList = new List<Auction>();
+
+            // Gennemgå hvert Catalog-objekt og hent tilhørende ExtendedCatalog-objekt baseret på CatalogId
+            foreach (var auction in auctionList)
+            {
+                // Tilføj catalog til den nye liste
+                auctionList.Add(auction);
+            }
+
+            return auctionList;
+        }
+
         public async Task<Auction> GetAuction(Guid auctionID)
         {
             // Create a filter to match documents with the specified auction ID
