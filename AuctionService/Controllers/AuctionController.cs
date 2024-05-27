@@ -33,10 +33,18 @@ namespace AuctionService.Controllers
         [HttpGet("all"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> getAll()
         {
-            _logger.LogInformation("Fetching all items from catalog");
+            _logger.LogInformation("Fetching all items from auctions");
             var auctionList = await _auctionService.GetAllAuctions();
+
+            if (auctionList == null || !auctionList.Any())
+            {
+                // Return a 404 error indicating no content found
+                return NotFound("No items found in the database.");
+            }
+
             return Ok(auctionList);
         }
+
 
         [HttpGet("{auctionID}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAuction(Guid auctionID)
