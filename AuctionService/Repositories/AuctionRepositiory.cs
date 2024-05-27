@@ -29,6 +29,7 @@ namespace AuctionService.Repositories
             // Execute the query and return all matching documents
             return await AuctionCollection.Find(filter).ToListAsync();
         }
+
         public async Task<Auction> GetAuction(Guid auctionID)
         {
             Console.WriteLine("GETAUCTION REPO ENTERED");
