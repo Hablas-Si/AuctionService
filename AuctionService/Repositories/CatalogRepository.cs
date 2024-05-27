@@ -11,10 +11,13 @@ namespace AuctionService.Repositories
         private readonly HttpClient _httpClient;
         private readonly ILogger<CatalogRepository> _logger;
 
-        public CatalogRepository(HttpClient httpClient, ILogger<CatalogRepository> logger)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public CatalogRepository(HttpClient httpClient, ILogger<CatalogRepository> logger, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         // public async Task<HttpResponseMessage> GetSpecificCatalog(Guid ItemId)
@@ -26,7 +29,10 @@ namespace AuctionService.Repositories
 
         public async Task<HttpResponseMessage> GetTask(Guid itemId)
         {
-           var response = await _httpClient.GetAsync($"/api/catalog/{itemId}");
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Replace("Bearer ", ""));
+
+            var response = await _httpClient.GetAsync($"/api/catalog/{itemId}");
             response.EnsureSuccessStatusCode();
             return response;
         }
