@@ -7,12 +7,15 @@ using AuctionService.Repositories;
 using System.Net.Http;
 using System.Security.Cryptography;
 using AuctionService.Services;
+using MongoDB.Bson.IO;
+using System.Text.Json;
 
 namespace AuctionService.Repositories
 {
     public class AuctionRepository : IAuctionRepository
     {
         private readonly IMongoCollection<Auction> AuctionCollection;
+        private RabbitMQSubscriber _subscriber;
 
         public AuctionRepository(IOptions<MongoDBSettings> mongoDBSettings)
         {
@@ -48,14 +51,56 @@ namespace AuctionService.Repositories
         }
         public async Task UpdateHighBid(Guid auctionID, HighBid newHighBid)
         {
-            var subscriber = new RabbitMQSubscriber("BidToAuc");
-            await subscriber.StartListening(async (message) =>
+                _subscriber = new RabbitMQSubscriber("BidToAuc");
+                await _subscriber.StartListening(OnBidReceived);
+        }
+
+        //RabbitMQListener
+
+        private async Task OnBidReceived(string message)
+        {
+            try
             {
+                // Deserialize message to get auctionID and newHighBid
+                var auctionID = ExtractAuctionID(message);
+                var newHighBid = ExtractNewHighBid(message);
+
                 // Update only the HighBid property of the auction
                 var filter = Builders<Auction>.Filter.Eq(a => a.Id, auctionID);
                 var update = Builders<Auction>.Update.Set(a => a.HighBid, newHighBid);
                 await AuctionCollection.UpdateOneAsync(filter, update);
-            });
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions appropriately
+                Console.WriteLine($"Error processing message: {ex.Message}");
+            }
+        }
+
+        private object ExtractNewHighBid(string message)
+        {
+            // Deserialize the JSON message to a dynamic object or a specific class
+            var jsonObject = JsonSerializer.Deserialize<dynamic>(message);
+
+            // Extract the high bid from the deserialized object
+            HighBid highBid = new HighBid
+            {
+                userName = jsonObject.userName,
+                Amount = jsonObject.Amount
+            };
+
+            return highBid;
+        }
+
+        private object ExtractAuctionID(string message)
+        {
+            // Deserialize the JSON message to a dynamic object or a specific class
+            var jsonObject = JsonSerializer.Deserialize<dynamic>(message);
+
+            // Extract the auction ID from the deserialized object
+            Guid auctionID = jsonObject.AuctionId;
+
+            return auctionID;
         }
     }
 }
