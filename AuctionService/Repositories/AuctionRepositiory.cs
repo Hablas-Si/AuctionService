@@ -57,7 +57,7 @@ namespace AuctionService.Repositories
 
         //RabbitMQListener
 
-        public async Task OnBidReceived(string message)
+        private async Task OnBidReceived(string message)
         {
             try
             {
