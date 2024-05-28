@@ -8,6 +8,6 @@ namespace AuctionService.Repositories
         Task<Auction> GetAuction(Guid auctionID);
         Task SubmitAuction(Auction auction);
         Task UpdateHighBid(Guid auctionID, HighBid newHighBid);
-
+        Task OnBidReceived(string message);
     }
 }

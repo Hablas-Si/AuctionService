@@ -16,6 +16,7 @@ using NLog.Web;
 using NLog;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.DependencyInjection;
+using AuctionService.Services;
 
 
 
@@ -102,6 +103,17 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+// Start listening for messages from RabbitMQ
+var subscriber = new RabbitMQSubscriber("BidToAuc");
+await subscriber.StartListening(async (message) =>
+{
+    // Resolve the auction repository
+    var auctionRepository = app.Services.GetRequiredService<IAuctionRepository>();
+
+    // Call the method in the repository
+    await auctionRepository.OnBidReceived(message);
+});
 
 //app.UseHttpsRedirection();
 
