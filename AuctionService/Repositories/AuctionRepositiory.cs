@@ -52,7 +52,7 @@ namespace AuctionService.Repositories
 
         //RabbitMQListener
 
-        public async Task OnBidReceived(string message)
+        public async Task<bool> OnBidReceived(string message)
         {
             try
             {
@@ -63,7 +63,8 @@ namespace AuctionService.Repositories
 
                 Console.WriteLine("MESSAGE CONTENTS");
                 Console.WriteLine(auctionID);
-                Console.WriteLine(newHighBid);
+                Console.WriteLine(newHighBid.Amount);
+                Console.WriteLine(newHighBid.userName);
 
                 // Update only the HighBid property of the auction
                 var filter = Builders<Auction>.Filter.Eq(a => a.Id, auctionID);
@@ -72,11 +73,16 @@ namespace AuctionService.Repositories
                 Console.WriteLine("FILTER AND UPDATE SET");
 
                 await AuctionCollection.UpdateOneAsync(filter, update);
+
+                Console.WriteLine("UPDATE SUCCESSFUL");
+                return true; // Indicate that the operation was successful
             }
             catch (Exception ex)
             {
                 // Handle exceptions appropriately
                 Console.WriteLine($"Error processing message: {ex.Message}");
+                Console.WriteLine($"Error processing message: {ex.Message}");
+                return false; // Indicate that the operation failed
             }
         }
 

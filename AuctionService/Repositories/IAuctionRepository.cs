@@ -7,6 +7,6 @@ namespace AuctionService.Repositories
         Task<IEnumerable<Auction>> GetAllAuctions();
         Task<Auction> GetAuction(Guid auctionID);
         Task SubmitAuction(Auction auction);
-        Task OnBidReceived(string message);
+        Task<bool> OnBidReceived(string message);
     }
 }
