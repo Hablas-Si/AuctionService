@@ -56,13 +56,21 @@ namespace AuctionService.Repositories
         {
             try
             {
+                Console.WriteLine("MESSAGE RECIEVED");
                 // Deserialize message to get auctionID and newHighBid
                 var auctionID = ExtractAuctionID(message);
                 var newHighBid = ExtractNewHighBid(message);
 
+                Console.WriteLine("MESSAGE CONTENTS");
+                Console.WriteLine(auctionID);
+                Console.WriteLine(newHighBid);
+
                 // Update only the HighBid property of the auction
                 var filter = Builders<Auction>.Filter.Eq(a => a.Id, auctionID);
                 var update = Builders<Auction>.Update.Set(a => a.HighBid, newHighBid);
+
+                Console.WriteLine("FILTER AND UPDATE SET");
+
                 await AuctionCollection.UpdateOneAsync(filter, update);
             }
             catch (Exception ex)
