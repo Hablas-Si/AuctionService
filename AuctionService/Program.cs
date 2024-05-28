@@ -16,6 +16,7 @@ using NLog.Web;
 using NLog;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.DependencyInjection;
+using AuctionService.Services;
 
 
 
@@ -99,6 +100,13 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Start the RabbitMQ listener
+var rabbitMQSubscriber = app.Services.GetRequiredService<RabbitMQSubscriber>();
+rabbitMQSubscriber.StartListening(message =>
+{
+    // Handle incoming messages here if needed
+    return Task.CompletedTask;
+});
 
 app.UseSwagger();
 app.UseSwaggerUI();
