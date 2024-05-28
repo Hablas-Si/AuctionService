@@ -82,28 +82,45 @@ namespace AuctionService.Repositories
 
         private HighBid ExtractNewHighBid(string message)
         {
-            // Deserialize the JSON message to a dynamic object or a specific class
-            var jsonObject = JsonSerializer.Deserialize<dynamic>(message);
-
-            // Extract the high bid from the deserialized object
-            HighBid highBid = new HighBid
+            try
             {
-                userName = jsonObject.userName,
-                Amount = jsonObject.Amount
-            };
+                var jsonObject = JsonSerializer.Deserialize<JsonElement>(message);
 
-            return highBid;
+                HighBid highBid = new HighBid
+                {
+                    userName = jsonObject.GetProperty("Bidder").GetString(),
+                    Amount = jsonObject.GetProperty("Amount").GetInt32()  // Changed to GetInt32()
+                };
+
+                return highBid;
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception
+                throw new ApplicationException("Failed to extract high bid from message", ex);
+            }
         }
 
-        private object ExtractAuctionID(string message)
+        public Guid ExtractAuctionID(string message)
         {
-            // Deserialize the JSON message to a dynamic object or a specific class
-            var jsonObject = JsonSerializer.Deserialize<dynamic>(message);
+            var jsonObject = JsonSerializer.Deserialize<JsonElement>(message);
 
-            // Extract the auction ID from the deserialized object
-            Guid auctionID = jsonObject.AuctionId;
-
-            return auctionID;
+            if (jsonObject.TryGetProperty("AuctionId", out JsonElement auctionIdElement))
+            {
+                string auctionIdString = auctionIdElement.GetString();
+                if (Guid.TryParse(auctionIdString, out Guid auctionID))
+                {
+                    return auctionID;
+                }
+                else
+                {
+                    throw new FormatException("Invalid GUID format for AuctionId.");
+                }
+            }
+            else
+            {
+                throw new KeyNotFoundException("AuctionId not found in the message.");
+            }
         }
     }
 }
