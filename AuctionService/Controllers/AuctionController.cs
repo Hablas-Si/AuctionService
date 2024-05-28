@@ -119,20 +119,20 @@ namespace AuctionService.Controllers
 
 
 
-        [HttpPut("{auctionID}/bid"), Authorize(Roles = "User, Admin")]
-        public async Task<IActionResult> UpdateHighBid(Guid auctionID, [FromBody] HighBid newHighBid)
-        {
-            var auction = await _auctionService.GetAuction(auctionID);
-            if (auction == null)
-            {
-                return NotFound(); // Return 404 if auction is not found
-            }
+        //[HttpPut("{auctionID}/bid"), Authorize(Roles = "User, Admin")]
+        //public async Task<IActionResult> UpdateHighBid(Guid auctionID, [FromBody] HighBid newHighBid)
+        //{
+        //    var auction = await _auctionService.GetAuction(auctionID);
+        //    if (auction == null)
+        //    {
+        //        return NotFound(); // Return 404 if auction is not found
+        //    }
 
-            // Update the high bid
-            await _auctionService.UpdateHighBid(auctionID, newHighBid);
+        //    // Update the high bid
+        //    await _auctionService.UpdateHighBid(auctionID, newHighBid);
 
-            return Ok("High bid updated successfully");
-        }
+        //    return Ok("High bid updated successfully");
+        //}
 
         // [HttpGet("test/{catalogId}")]
         // public async Task<IActionResult> GetCatalog(Guid catalogId)
