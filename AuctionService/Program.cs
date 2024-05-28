@@ -110,10 +110,12 @@ var app = builder.Build();
 
 // Start the RabbitMQ listener
 var rabbitMQSubscriber = app.Services.GetRequiredService<RabbitMQSubscriber>();
-rabbitMQSubscriber.StartListening(message =>
+var auctionRepository = app.Services.GetRequiredService<IAuctionRepository>();
+
+rabbitMQSubscriber.StartListening(async message =>
 {
-    // Handle incoming messages here if needed
-    return Task.CompletedTask;
+    // Handle incoming messages here by calling the OnBidReceived method
+    await auctionRepository.OnBidReceived(message);
 });
 
 app.UseSwagger();
