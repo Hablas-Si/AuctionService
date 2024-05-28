@@ -108,7 +108,7 @@ namespace AuctionService.Controllers
 
                 _logger.LogInformation("Auction submitted successfully");
 
-                return Ok("Auction submitted successfully");
+                return Ok(auction);
             }
             catch (Exception ex)
             {
