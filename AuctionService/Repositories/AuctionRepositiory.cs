@@ -49,11 +49,6 @@ namespace AuctionService.Repositories
             Console.WriteLine($"Bid submitted: {auction}");
             await AuctionCollection.InsertOneAsync(auction);
         }
-        public async Task UpdateHighBid(Guid auctionID, HighBid newHighBid)
-        {
-                _subscriber = new RabbitMQSubscriber("BidToAuc");
-                await _subscriber.StartListening(OnBidReceived);
-        }
 
         //RabbitMQListener
 
@@ -77,7 +72,7 @@ namespace AuctionService.Repositories
             }
         }
 
-        private object ExtractNewHighBid(string message)
+        private HighBid ExtractNewHighBid(string message)
         {
             // Deserialize the JSON message to a dynamic object or a specific class
             var jsonObject = JsonSerializer.Deserialize<dynamic>(message);
