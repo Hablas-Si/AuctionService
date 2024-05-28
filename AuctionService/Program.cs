@@ -98,7 +98,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<RabbitMQSubscriber>();
+// Register RabbitMQSubscriber service
+builder.Services.AddSingleton<RabbitMQSubscriber>(provider =>
+{
+    var rabbitMQHostName = "rabbitmq"; // Change this to your RabbitMQ server
+    var queueName = "BidToAuc"; // Or load this from configuration
+    return new RabbitMQSubscriber(rabbitMQHostName, queueName);
+});
 
 var app = builder.Build();
 

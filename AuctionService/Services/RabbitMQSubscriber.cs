@@ -14,22 +14,25 @@ public class RabbitMQSubscriber
     private readonly RMQConnection _connection;
     private readonly IModel _channel;
     private readonly string _queueName;
+       private readonly string _rabbitMQHostName;
 
-    public RabbitMQSubscriber(string queueName)
-    {
-        var factory = new ConnectionFactory() { HostName = "rabbitmq" }; // Change this to your RabbitMQ server
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
-        _queueName = queueName;
+        public RabbitMQSubscriber(string rabbitMQHostName, string queueName)
+        {
+            _rabbitMQHostName = rabbitMQHostName;
+            _queueName = queueName;
 
-        _channel.QueueDeclare(queue: _queueName,
-                              durable: false,
-                              exclusive: false,
-                              autoDelete: false,
-                              arguments: null);
-    }
+            var factory = new ConnectionFactory() { HostName = _rabbitMQHostName };
+            _connection = factory.CreateConnection();
+            _channel = _connection.CreateModel();
 
-    public async Task StartListening(Func<string, Task> processMessage)
+            _channel.QueueDeclare(queue: _queueName,
+                                  durable: false,
+                                  exclusive: false,
+                                  autoDelete: false,
+                                  arguments: null);
+        }
+
+        public async Task StartListening(Func<string, Task> processMessage)
     {
         var consumer = new EventingBasicConsumer(_channel);
         consumer.Received += async (model, ea) =>
