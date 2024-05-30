@@ -101,7 +101,7 @@ builder.Services.AddSwaggerGen();
 // Register RabbitMQSubscriber service
 builder.Services.AddSingleton<RabbitMQSubscriber>(provider =>
 {
-    var rabbitMQHostName = "http://backend:5672/"; // Change this to your RabbitMQ server
+    var rabbitMQHostName = "backend"; // Change this to your RabbitMQ server
     Console.WriteLine(rabbitMQHostName);
     var queueName = "BidToAuc"; // Or load this from configuration
     return new RabbitMQSubscriber(rabbitMQHostName, queueName);
